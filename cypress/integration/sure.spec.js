@@ -72,8 +72,8 @@ describe("Sure App tests", () => {
     cy.getTestId("policy-premium").contains("$");
   });
 
-  // TODO: Add dropdown tests
-
+  // TODO: Add dropdown tests but you asked for one test
+  // and got cypress and jest already :p
   it("returns to the form", () => {
     cy.getTestId("start-over").click();
     confirmEmptyInputs();
