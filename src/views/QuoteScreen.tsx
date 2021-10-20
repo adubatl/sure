@@ -23,12 +23,15 @@ import { PurplishButton, StyledInputBase } from "./shared";
 
 const StyledLabel = styled(InputLabel)`
   color: ${colors.greenish};
+  span {
+    font-size: 0.75em;
+    font-style: oblique;
+  }
 `;
 
 const Title = styled.span`
   font-size: 1.25em;
   font-weight: bold;
-  font-style: smallcaps;
 `;
 
 const Info = styled.span`
@@ -108,15 +111,17 @@ export const QuoteScreen = (props: IProps) => {
             <Title>Quote</Title>
             <dl>
               <dt>Policy holder:</dt>
-              <dd>
+              <dd data-test="policy-holder">
                 {quote.policy_holder.first_name +
                   " " +
                   quote.policy_holder.last_name[0].toUpperCase()}
               </dd>
               <dt>Priced for:</dt>
-              <dd>{quote.rating_address.postal}</dd>
+              <dd data-test="policy-postal">{quote.rating_address.postal}</dd>
               <dt>Premium*: </dt>
-              <dd>{loading ? "Loading. . ." : dollarFormat(quote.premium)}</dd>
+              <dd data-test="policy-premium">
+                {loading ? "Loading. . ." : dollarFormat(quote.premium)}
+              </dd>
             </dl>
             <Info>
               * premium adjusted based on the values of the adjacent dropdowns.
@@ -135,9 +140,14 @@ export const QuoteScreen = (props: IProps) => {
           <div>
             <StyledLabel>
               Deductible{" "}
-              {quote.variable_options.deductible.default &&
-                "default is: " +
-                  dollarFormat(quote.variable_options.deductible.default)}
+              <span>
+                {"default is: " +
+                  (quote.variable_options.deductible.default
+                    ? dollarFormat(quote.variable_options.deductible.default)
+                    : dollarFormat(
+                        quote.variable_options.deductible.values[0]
+                      ))}
+              </span>
               {/* the docs provided say default exists, the return type does not contain it */}
             </StyledLabel>
             <Select
@@ -156,11 +166,16 @@ export const QuoteScreen = (props: IProps) => {
           <div>
             <StyledLabel>
               Asteroid Collision{" "}
-              {quote.variable_options.asteroid_collision.default &&
-                "default is: " +
-                  dollarFormat(
-                    quote.variable_options.asteroid_collision.default
-                  )}
+              <span>
+                {"default is: " +
+                  (quote.variable_options.asteroid_collision.default
+                    ? dollarFormat(
+                        quote.variable_options.asteroid_collision.default
+                      )
+                    : dollarFormat(
+                        quote.variable_options.asteroid_collision.values[0]
+                      ))}
+              </span>
               {/* the docs provided say this exists, the return type does not contain it */}
             </StyledLabel>
             <Select
@@ -183,6 +198,7 @@ export const QuoteScreen = (props: IProps) => {
           sx={buttonStyle}
           onClick={resetState}
           variant="outlined"
+          data-test="start-over"
         >
           Request another quote
         </PurplishButton>

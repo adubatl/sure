@@ -23,7 +23,7 @@ export const LandingScreen = () => {
 
   return (
     <Container sx={containerStyle}>
-      <h1>{quote ? "" : "Tell us about you"}</h1>
+      <h1 data-test="header-text">{quote ? "" : "Tell us about you"}</h1>
       <Grid container component="form" autoComplete="off" spacing={2}>
         {!quote ? (
           <RequestAQuote

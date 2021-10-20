@@ -90,3 +90,17 @@ export const colors = {
   greenish: "#5be0a6",
   purplish: "#490761",
 };
+
+// fake objects for an auto fill no one asked for
+// but I want
+export const fakePerson = {
+  first_name: "Philip",
+  last_name: "Sherman",
+};
+export const fakeAddress = {
+  line_1: "42 Wallaby Way",
+  line_2: "STE 4",
+  city: "Sydney",
+  region: "New South Wales",
+  postal: "11901",
+};

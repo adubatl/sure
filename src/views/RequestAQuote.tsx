@@ -7,6 +7,8 @@ import {
   addressTemplate,
   baseUrl,
   colors,
+  fakeAddress,
+  fakePerson,
   IQuote,
   touchedTemplate,
 } from "./constants";
@@ -88,19 +90,30 @@ export const RequestAQuote = (props: IProps) => {
       }
     };
 
-  const fetchQuote = async () => {
+  const fetchQuote = (useFake: boolean) => async () => {
     setLoading(true);
+    // a little util just for cypress/ease of testing
+    // auto submits with fake data. would not keep this around in prod
+    // if I did it would be feature-flagged for admins/qa or
+    // thrown on the window as a function to be called directly
+    const payload = useFake
+      ? {
+          ...fakePerson,
+          address: fakeAddress,
+        }
+      : {
+          first_name: firstName,
+          last_name: lastName,
+          address,
+        };
+
     // in a production environment I would personally
     // prefer these calls to happen server side
     // 1. Send data for request to backend
     // 2. backend crafts and fires off requests
     // 3. client gets data back in an async manner
     const response = await axios
-      .post<{ quote: IQuote }>(baseUrl, {
-        first_name: firstName,
-        last_name: lastName,
-        address,
-      })
+      .post<{ quote: IQuote }>(baseUrl, payload)
       .then((response) => {
         setLoading(false);
         return response;
@@ -153,6 +166,7 @@ export const RequestAQuote = (props: IProps) => {
           helperText={hasError("first") && "A first name is required."}
           fullWidth
           disabled={loading}
+          data-test="first-name"
         />
       </Grid>
       <Grid item xs={5}>
@@ -168,6 +182,7 @@ export const RequestAQuote = (props: IProps) => {
           }
           fullWidth
           disabled={loading}
+          data-test="last-name"
         />
       </Grid>
       <Grid item xs={10}>
@@ -181,6 +196,7 @@ export const RequestAQuote = (props: IProps) => {
           helperText={hasError("address.line_1") && "An address is required."}
           fullWidth
           disabled={loading}
+          data-test="address-line-1"
         />
       </Grid>
       <Grid item xs={5}>
@@ -191,6 +207,7 @@ export const RequestAQuote = (props: IProps) => {
           onChange={updateForm("address.line_2")}
           fullWidth
           disabled={loading}
+          data-test="address-line-2"
         />
       </Grid>
       <Grid item xs={5}>
@@ -204,6 +221,7 @@ export const RequestAQuote = (props: IProps) => {
           helperText={hasError("address.city") && "A city is required."}
           fullWidth
           disabled={loading}
+          data-test="address-city"
         />
       </Grid>
       <Grid item xs={5}>
@@ -217,6 +235,7 @@ export const RequestAQuote = (props: IProps) => {
           helperText={hasError("address.region") && "A region is required."}
           fullWidth
           disabled={loading}
+          data-test="address-region"
         />
       </Grid>
       <Grid item xs={5}>
@@ -232,13 +251,15 @@ export const RequestAQuote = (props: IProps) => {
           }
           fullWidth
           disabled={loading}
+          data-test="address-postal"
         />
       </Grid>
       <Grid item xs={5}>
         <PurplishLoadingButton
           loading={loading}
-          onClick={fetchQuote}
+          onClick={fetchQuote(false)}
           variant="outlined"
+          data-test="get-quote"
         >
           Get a quote FAST!
         </PurplishLoadingButton>
@@ -248,9 +269,20 @@ export const RequestAQuote = (props: IProps) => {
           onClick={resetForm}
           variant="outlined"
           disabled={loading}
+          data-test="clear-form"
         >
           Clear
         </PurplishButton>
+      </Grid>
+      <Grid item xs={3}>
+        <PurplishLoadingButton
+          loading={loading}
+          onClick={fetchQuote(true)}
+          variant="outlined"
+          data-test="example-submit"
+        >
+          Example
+        </PurplishLoadingButton>
       </Grid>
     </>
   );
