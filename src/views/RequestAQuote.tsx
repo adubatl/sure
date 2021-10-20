@@ -127,7 +127,9 @@ export const RequestAQuote = (props: IProps) => {
       setQuote(response.data.quote);
     }
   };
-
+  const validZip = (zipString: string) => {
+    return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zipString);
+  };
   // Error validation by key, some other libs
   // offer a slightly more built-in set of form
   // validation
@@ -144,14 +146,20 @@ export const RequestAQuote = (props: IProps) => {
       // for simplicity im opting to validate postal for US only
       case "address.postal":
         return (
-          touched["postal"] &&
-          !address.postal &&
-          !/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(address.postal)
+          touched["postal"] && (!address.postal || !validZip(address.postal))
         );
       case "address.region":
         return touched["region"] && !address.region;
     }
   };
+
+  const canSubmit =
+    firstName &&
+    lastName &&
+    address.line_1 &&
+    address.city &&
+    validZip(address.postal) &&
+    address.region;
 
   return (
     <>
@@ -260,6 +268,12 @@ export const RequestAQuote = (props: IProps) => {
           onClick={fetchQuote(false)}
           variant="outlined"
           data-test="get-quote"
+          disabled={loading || !canSubmit}
+          title={
+            !canSubmit
+              ? "Please fill out the required fields."
+              : "Get a quote FAST!"
+          }
         >
           Get a quote FAST!
         </PurplishLoadingButton>
@@ -270,6 +284,7 @@ export const RequestAQuote = (props: IProps) => {
           variant="outlined"
           disabled={loading}
           data-test="clear-form"
+          title="Clear the form."
         >
           Clear
         </PurplishButton>
